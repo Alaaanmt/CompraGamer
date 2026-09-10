@@ -1,0 +1,32 @@
+@import "tailwindcss";
+
+html {
+    scroll-behavior: smooth;
+    font-family: 'Montserrat';
+}
+
+/* Cambiar el color de los puntitos */
+:root {
+    --swiper-pagination-color: #ea580c;
+    /* Naranja (orange-600) */
+    --paginationMarcas-swiper-pagination: #ea580c;
+    /* Naranja (orange-600) */
+    --swiper-pagination-bullet-inactive-color: #9ca3af;
+    /* Gris (gray-400) */
+    --swiper-pagination-bullet-inactive-opacity: 0.5;
+    --swiper-pagination-bullet-size: 10px;
+}
+
+/* Bajar la posición de la paginación */
+
+
+.paginationMarcas.swiper-pagination {
+    --swiper-pagination-color: #ea580c;
+    /* Naranja (orange-600) */
+    --paginationMarcas-swiper-pagination: #ea580c;
+    /* Naranja (orange-600) */
+    --swiper-pagination-bullet-inactive-color: #9ca3af;
+    /* Gris (gray-400) */
+    --swiper-pagination-bullet-inactive-opacity: 0.5;
+    --swiper-pagination-bullet-size: 10px;
+}
