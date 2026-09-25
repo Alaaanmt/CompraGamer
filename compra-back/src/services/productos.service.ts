@@ -2,11 +2,14 @@ import { ProductosRepository } from "../repository/productos.repository";
 import { config } from "../config/config";
 import fs from 'fs/promises';
 import path from 'path';
+import { error } from "console";
+import { prisma } from "../prisma";
 
 export class ProductosService {
 
     constructor(private productosRepository: ProductosRepository) {}
 
+    //PRODUCTS
     async GetProducts() {
         return await this.productosRepository.GetProducts();
     }
@@ -54,34 +57,73 @@ export class ProductosService {
         return await this.productosRepository.DeleteProduct(id);
     }
 
+
+    //CATEGORIES
     async GetCategories() {
         return await this.productosRepository.GetCategories();
     }
 
-    async GetProductsByCategory(categoryId: number) {
+    async GetCategoryById(categoryId: number) {
         if (isNaN(categoryId)) {
             throw new Error("El ID de categoría proporcionado no es un número válido.");
         }
         if (categoryId <= 0) {
             throw new Error("El ID de categoría debe ser un número positivo.");
         }
-        return await this.productosRepository.GetProductsByCategory(categoryId);
+        return await this.productosRepository.GetCategoryById(categoryId);
     }
 
+    async CreateCategory(nombre: string){
+        const nombreCategory = await this.productosRepository.GetCategoryByName(nombre)
+        if(!nombre || !nombre.trim()){
+            throw new Error("El nombre no puede estar incompleto")
+        }
+
+        
+        if(nombreCategory){
+            throw new Error("El nombre de la categoría ya existe.");
+        }
+        
+        return await this.productosRepository.CreateCategory({
+            nombre: nombre.trim()
+        });
+    }
+
+
+    //BRANDS
     async GetBrands() {
         return await this.productosRepository.GetBrands();
     }
-    async GetProductsByBrand(brandId: number) {
+
+    async GetBrandById(brandId: number) {
         if (isNaN(brandId)) {
             throw new Error("El ID de marca proporcionado no es un número válido.");
         }
         if (brandId <= 0) {
             throw new Error("El ID de marca debe ser un número positivo.");
         }
-        return await this.productosRepository.GetProductsByBrand(brandId);
+        return await this.productosRepository.GetBrandById(brandId);
     }
 
-    async uploadImage(productoId: number, files: Express.Multer.File[]) {
+    async CreateBrand(nombre: string, file: Express.Multer.File){
+        if(!nombre || !file){
+            throw new Error("Completar todos los campos")
+        }
+
+        let logo_url: string | undefined = undefined;
+
+        if (file) {
+        logo_url = '/uploads/' + file.filename;
+    }
+        return await this.productosRepository.CreateBrand({
+            nombre,
+            logo_url
+        })
+    }
+
+
+    //IMAGES
+    async UploadImage(productoId: number, files: Express.Multer.File[]) {
         const results = [];
 
         for (const file of files) {
@@ -89,7 +131,7 @@ export class ProductosService {
             const path = '/uploads/' + name;
 
             // Persiste mediante Prisma
-            const archivoGuardado = await this.productosRepository.createImageProduct(productoId, path);
+            const archivoGuardado = await this.productosRepository.CreateImageProduct(productoId, path);
 
             results.push({
                 id: archivoGuardado.id,
@@ -105,20 +147,20 @@ export class ProductosService {
         };
     }
 
-   async deleteImage(id: number) {
+   async DeleteImage(id: number) {
     if (isNaN(id) || id <= 0) {
         throw new Error("El ID de la imagen proporcionado no es válido.");
     }
 
     // 1. Buscamos el registro a través del repository
-    const imagen = await this.productosRepository.findImageById(id);
+    const imagen = await this.productosRepository.FindImageById(id);
 
     if (!imagen) {
         throw new Error("La imagen especificada no existe.");
     }
 
     // 2. Borramos el registro en la Base de Datos
-    const imagenEliminada = await this.productosRepository.deleteImageProduct(id);
+    const imagenEliminada = await this.productosRepository.DeleteImageProduct(id);
 
     // 3. Borramos el archivo físico del servidor
     try {
@@ -129,5 +171,6 @@ export class ProductosService {
     }
 
     return imagenEliminada;
+
 }
 }

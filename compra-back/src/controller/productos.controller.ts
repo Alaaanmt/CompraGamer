@@ -1,13 +1,14 @@
-import {ProductosRepository} from "../repository/productos.repository";
-import {ProductosService} from "../services/productos.service";
+import { ProductosRepository } from "../repository/productos.repository";
+import { ProductosService } from "../services/productos.service";
 import { Request, Response } from "express";
 
 const productosRepository = new ProductosRepository();
 const productosService = new ProductosService(productosRepository);
 
 export class ProductosController {
-    constructor() {}
+    constructor() { }
 
+    //PRODUCTS
     public async GetProducts(req: Request, res: Response) {
         try {
             const products = await productosService.GetProducts();
@@ -32,7 +33,7 @@ export class ProductosController {
                 res.status(404).json({ error: "Producto no encontrado." });
                 return;
             } else {
-            res.json(product);
+                res.json(product);
             }
 
         } catch (error) {
@@ -80,31 +81,44 @@ export class ProductosController {
         }
     }
 
+
+    //CATEGORIES
     public async GetCategories(req: Request, res: Response) {
         const categories = await productosService.GetCategories();
         res.json(categories);
     }
 
-    public async GetProductsByCategory(req: Request, res: Response) {
+    public async GetCategoryById(req: Request, res: Response) {
         const categoryId: number = Number(req.params.categoryId);
         if (isNaN(categoryId)) {
             res.status(400).json({ error: "ID de categoría invalido." });
             return;
         }
         try {
-            const productosPorCategoria = await productosService.GetProductsByCategory(categoryId);
+            const productosPorCategoria = await productosService.GetCategoryById(categoryId);
             res.json(productosPorCategoria);
         } catch (error) {
             res.status(400).json({ error: error.message });
         }
     }
 
+    public async CreateCategory(req: Request, res: Response) {
+        try {
+            const { nombre } = req.body;
+            const nuevaCategoria = await productosService.CreateCategory(nombre);
+            res.status(201).json(nuevaCategoria);
+        } catch (error: any) {
+            res.status(400).json({ error: error.message });
+        }
+    }
+
+    //BRANDS
     public async GetBrands(req: Request, res: Response) {
         const brands = await productosService.GetBrands();
         res.json(brands);
     }
 
-    public async GetProductsByBrand(req: Request, res: Response) {
+    public async GetBrandById(req: Request, res: Response) {
         const brandId: number = Number(req.params.brandId);
         if (isNaN(brandId)) {
             res.status(400).json({ error: "ID de marca invalido." });
@@ -112,14 +126,29 @@ export class ProductosController {
         }
 
         try {
-            const productosPorMarca = await productosService.GetProductsByBrand(brandId);
+            const productosPorMarca = await productosService.GetBrandById(brandId);
             res.json(productosPorMarca);
-        }catch (error) {
+        } catch (error) {
             res.status(400).json({ error: error.message });
         }
     }
 
-    public async uploadImages(req: Request, res: Response) {
+    public async CreateBrand(req: Request, res: Response) {
+        try {
+            const { nombre } = req.body;
+            const files = req.files as Express.Multer.File[];
+            const file = files && files.length > 0 ? files[0] : undefined;
+
+            const nuevaMarca = await productosService.CreateBrand(nombre, file);
+            return res.status(201).json(nuevaMarca);
+        } catch (error: any) {
+            return res.status(400).json({ error: error.message || "Error al crear la marca." });
+        }
+    }
+
+
+    //IMAGES
+    public async UploadImages(req: Request, res: Response) {
         try {
             const productoId = Number(req.params.productoId);
             const files = req.files as Express.Multer.File[];
@@ -128,28 +157,28 @@ export class ProductosController {
                 return res.status(400).json({ status: "error", message: "No se envió ninguna imagen" });
             }
 
-            const result = await productosService.uploadImage(productoId, files);
+            const result = await productosService.UploadImage(productoId, files);
             return res.status(200).json(result);
         } catch (error: any) {
             return res.status(500).json({ status: "error", message: error.message || "Error al subir la imagen" });
         }
     }
 
-  public async deleteImage(req: Request, res: Response) {
-    try {
-        const id: number = Number(req.params.id);
+    public async DeleteImage(req: Request, res: Response) {
+        try {
+            const id: number = Number(req.params.id);
 
-        if (isNaN(id)) {
-            return res.status(400).json({ error: "ID de imagen inválido." });
+            if (isNaN(id)) {
+                return res.status(400).json({ error: "ID de imagen inválido." });
+            }
+
+            const imagenEliminada = await productosService.DeleteImage(id);
+            return res.status(200).json({
+                message: "Imagen eliminada con éxito",
+                data: imagenEliminada
+            });
+        } catch (error: any) {
+            return res.status(400).json({ error: error.message || "Error al eliminar la imagen." });
         }
-
-        const imagenEliminada = await productosService.deleteImage(id);
-        return res.status(200).json({
-            message: "Imagen eliminada con éxito",
-            data: imagenEliminada
-        });
-    } catch (error: any) {
-        return res.status(400).json({ error: error.message || "Error al eliminar la imagen." });
     }
-}
 }

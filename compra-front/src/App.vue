@@ -179,7 +179,7 @@ const navbar = [
     {
         id: 1,
         name: 'Productos',
-        link: '/listar-productos'
+        link: '/products'
     },
     {
         id: 2,

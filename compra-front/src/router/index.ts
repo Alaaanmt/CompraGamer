@@ -7,6 +7,7 @@ import EditProduct from '@/views/EditProduct.vue';
 import LogIn from '@/views/logIn.vue';
 import SignUp from '@/views/signUp.vue';
 import Profile from '@/views/Profile.vue';
+import Products from '@/views/Products.vue';
 
 const routes = [
     { path: '/', component: Home },
@@ -15,7 +16,8 @@ const routes = [
     { path: '/editar-producto/:id', component: EditProduct, meta: { requiresAuth: true, requireAdmin: true }},
     { path: '/login', component: LogIn},
     { path: '/signup', component: SignUp},
-    { path: '/profile', component: Profile}
+    { path: '/profile', component: Profile},
+    { path: '/products', component: Products}
 ];
 
 

@@ -135,9 +135,9 @@ onBeforeMount(() => {
             listaCategorias.value = response.data;
         })
         .catch(error => {
-            const mensajeError = error.response?.data?.message || "Error al eliminar el producto.";
+            const mensajeError = error.response?.data?.message || "Error al obtener categorias";
             toast.error("Error", { description: mensajeError });
-            console.error("Error al eliminar el producto:", error);
+            console.error("Error al obtener categorias:", error);
         });
 });
 

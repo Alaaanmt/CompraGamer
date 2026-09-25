@@ -4,9 +4,9 @@ import { prisma } from '../prisma.js';
 export class ProductosRepository {
 
     async GetProducts() {
-       const products = await prisma.productos.findMany({
+        const products = await prisma.productos.findMany({
             include: {
-                producto_imagenes: true 
+                producto_imagenes: true
             }
         });
         return products;
@@ -50,12 +50,13 @@ export class ProductosRepository {
         return product;
     }
 
+    //CATEGORIES
     async GetCategories() {
         const categories = await prisma.categorias.findMany();
         return categories;
     }
 
-    async GetProductsByCategory(id: number) {
+    async GetCategoryById(id: number) {
         const products = await prisma.categorias.findUnique({
             where: {
                 id: id
@@ -64,12 +65,27 @@ export class ProductosRepository {
         return products;
     }
 
+    async CreateCategory(data: { nombre: string }) {
+        const category = await prisma.categorias.create({
+            data
+        })
+        return category
+    }
+
+    async GetCategoryByName(nombre: string) {
+        return await prisma.categorias.findFirst({
+            where: { nombre }
+        });
+    }
+
+    //BRANDS
+
     async GetBrands() {
         const brands = await prisma.marcas.findMany();
         return brands;
     }
 
-    async GetProductsByBrand(id: number) {
+    async GetBrandById(id: number) {
         const products = await prisma.marcas.findUnique({
             where: {
                 id: id
@@ -78,24 +94,35 @@ export class ProductosRepository {
         return products;
     }
 
-    async createImageProduct(productoId: number, imagenUrl: string) {
+    async CreateBrand(data: { nombre: string, logo_url: string }) {
+        const brand = await prisma.marcas.create({
+            data
+        })
+        return brand
+    }
+
+    //IMAGES
+
+    async CreateImageProduct(productoId: number, imagenUrl: string) {
         return await prisma.producto_imagenes.create({
             data: {
                 producto_id: productoId,
-                imagen_url: imagenUrl 
+                imagen_url: imagenUrl
             }
         });
     }
 
-    async findImageById(id: number) {
+    async FindImageById(id: number) {
         return await prisma.producto_imagenes.findUnique({
             where: { id: id }
         });
     }
 
-    async deleteImageProduct(id: number) {
+    async DeleteImageProduct(id: number) {
         return await prisma.producto_imagenes.delete({
             where: { id: id }
         });
     }
+
+
 }
