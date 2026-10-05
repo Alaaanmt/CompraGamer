@@ -24,6 +24,18 @@ export class ProductosRepository {
         return products;
     }
 
+    async GetProductByCategory(id: number) {
+        const products = await prisma.productos.findMany({
+            where: {
+                categoria_id: id
+            },
+            include: {
+                producto_imagenes: true 
+            }
+        })
+        return products
+    }
+
     async CreateProduct(data: { nombre: string, descripcion: string, precio: number, stock: number, marca_id: number, categoria_id: number }) {
         const product = await prisma.productos.create({
             data

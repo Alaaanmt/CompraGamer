@@ -17,6 +17,8 @@ productoRouter.get("/marca", productosController.GetBrands.bind(productosControl
 productoRouter.get("/marca/:brandId", productosController.GetBrandById.bind(productosController));
 productoRouter.post("/marca", authenticateToken, requireRole("ADMIN"), uploadImages, productosController.CreateBrand.bind(productosController))
 
+productoRouter.get("/porCategoria/:id", productosController.GetProductByCategory.bind(productosController));
+
 productoRouter.get("/:id", productosController.GetProductByID.bind(productosController));
 
 productoRouter.post("/", authenticateToken, requireRole("ADMIN"), productosController.CreateProduct.bind(productosController));

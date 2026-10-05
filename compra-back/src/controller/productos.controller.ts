@@ -41,6 +41,24 @@ export class ProductosController {
         }
     }
 
+    public async GetProductByCategory(req: Request, res: Response){
+        try {
+            const id: number = Number(req.params.id);
+
+            const product = await productosService.GetProductByCategory(id);
+
+            if (!product) {
+                res.status(404).json({ error: "Producto con esa categoria no encontrado." });
+                return;
+            } else {
+                res.json(product);
+            }
+
+        } catch (error) {
+            res.status(500).json({ error: "Error al obtener el producto." });
+        }
+    }
+
     public async CreateProduct(req: Request, res: Response) {
         const data = req.body;
         try {

@@ -31,7 +31,8 @@
     </section>
 
     <!--LISTADO DE PRODUCTOS-->
-    <section class="px-4 lg:px-12 pt-10 flex flex-col items-center md:items-start md:flex-row md:justify-between gap-6 ">
+    <section
+        class="px-4 lg:px-12 pt-10 flex flex-col items-center md:items-start md:flex-row md:justify-between gap-6 ">
         <!-- EJEMPLO DE FORMA MODERNA.
     <swiper
          :modules="[Autoplay, Pagination]"
@@ -44,21 +45,25 @@
     </swiper>
    
         -->
-        <aside class="md:flex flex-col gap-4 w-1/3 " @click="categoriasActiva = !categoriasActiva">
+        <aside class="md:flex flex-col gap-4 w-1/3 ">
             <div id="filters" class="space-y-4 ">
-                <div class="flex items-center justify-between md:justify-start gap-1 md:gap-2 cursor-pointer select-none border border-orange-600 text-orange-600 px-3 py-2 rounded-md  md:border-none md:px-0 md:py-0 md:text-black">
+                <div
+                    class="flex items-center justify-between md:justify-start gap-1 md:gap-2 cursor-pointer select-none border border-orange-600 text-orange-600 px-3 py-2 rounded-md  md:border-none md:px-0 md:py-0 md:text-black">
                     <div class="w-3 shrink-0">
                         <img :src="categoriasActiva ? '/img/flecha-arriba-naranja.svg' : '/img/flecha-abajo-naranja.svg'"
                             alt="" class="w-full h-auto object-contain">
                     </div>
-                    <p class="font-semibold md:text-lg text-sm" >Categorías</p>
+                    <p class="font-semibold md:text-lg text-sm" @click="categoriasActiva = !categoriasActiva">Categorías
+                    </p>
                 </div>
                 <div class=" md:flex md:flex-col gap-2 overflow-hidden transition-all duration-300"
                     :class="categoriasActiva ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0 pointer-events-none'">
                     <router-link v-for="categoria in listaCategorias" :key="categoria.id"
-                        :to="'/productos?cat=' + categoria.id">
-                        <p class="lowercase text-[13px] hover:bg-neutral-200 px-2 py-0.5 duration-300 transition-all text-start">{{
-                            categoria.nombre }}</p>
+                        :to="'/products?cat=' + categoria.id">  
+                        <p
+                            class="lowercase text-[13px] hover:bg-neutral-200 px-2 py-0.5 duration-300 transition-all text-start">
+                            {{
+                                categoria.nombre }}</p>
                     </router-link>
                 </div>
             </div>
@@ -112,7 +117,7 @@ import axios from 'axios';
 
 //VUE
 import { toast } from "vue-sonner";
-import { onBeforeMount, onMounted, ref, nextTick } from 'vue';
+import { onBeforeMount, onMounted, ref, nextTick, watch } from 'vue';
 import router from '@/router';
 
 //SWIPER
@@ -122,6 +127,7 @@ import 'swiper/css';
 
 //DATA
 const productos = ref<any[]>([]);
+const productosPorCategoria = ref<any[]>([]);
 const listaCategorias = ref<any>({});
 const listaMarcas = ref<any>({});
 const categoriasActiva = ref(false)
@@ -172,7 +178,7 @@ function listarProductos() {
     let endpoint = "http://localhost:3000/api/productos";
 
     if (router.currentRoute.value.query.cat) {
-        endpoint += `?cat=${router.currentRoute.value.query.cat}`;
+        endpoint += `/porCategoria/${router.currentRoute.value.query.cat}`;
     }
 
     axios.get(endpoint)
@@ -226,6 +232,13 @@ onMounted(async () => {
 
 })
 
-//HACER WATCH DE RUTA   
-
+//WATCHERS
+watch(
+    () => router.currentRoute.value.query.cat,
+    (newCat, oldCat) => {
+        console.log("Categoría cambió:", oldCat, "→", newCat);
+        listarProductos();
+    }
+    
+);
 </script>

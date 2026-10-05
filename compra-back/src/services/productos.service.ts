@@ -21,6 +21,13 @@ export class ProductosService {
         return await this.productosRepository.GetProductByID(id);
     }
 
+    async GetProductByCategory(id: number){
+        if(isNaN(id)){
+            throw new Error("ID inválido")
+        }
+        return await this.productosRepository.GetProductByCategory(id);
+    }
+
     async CreateProduct(data: { nombre: string, descripcion: string, precio: number, stock: number, marca_id: number, categoria_id: number}) {
         if (!data.nombre || !data.descripcion || !data.precio || !data.stock || !data.marca_id || !data.categoria_id) {
             throw new Error("Todos los campos son obligatorios.");
